@@ -1,4 +1,4 @@
-ARG overlay_ref=3dcc1a92bcbb5ed11c88ea8c44f806f2f8e91cbd
+ARG overlay_ref=cdafceb4411120e0699684efe52c0abe8166ecc8
 ARG bcc_ref=v0.12.0
 ARG bpftrace_ref=master
 
@@ -29,10 +29,9 @@ RUN mkdir -p /etc/portage/repos.conf && \
 
 # Build static libs for libelf and glibc
 RUN emerge -qv dev-libs/elfutils
-RUN emerge -qv sys-libs/glibc
 
-# Build cutom clang
-RUN emerge -qv --onlydeps sys-devel/clang::localrepo
+# Install LLVM and build custom clang
+RUN emerge -qv sys-devel/llvm
 RUN emerge -qv sys-devel/clang::localrepo
 
 # Build BCC and install static libs
