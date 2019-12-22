@@ -7,12 +7,7 @@ DOCKER ?= docker
 BPFTRACE_REF ?= "master"
 OVERLAY_REF ?= "8fcc2a5676f9bea4ea6945f2cfdf52319ce7759c"
 BCC_REF ?= "v0.12.0"
-
-# Ensure that output is actually printed, too keep travis jobs alive
-# Starts a bash process to print to stdout every 60 seconds.
-.PHONY: keepalive
-keepalive:
-	bash -c "(while true; do echo '.'; sleep 60; done ) &"
+DOCKER_TAG ?= "quay.io/dalehamel/bpftrace-static-clang:latest"
 
 .PHONY: cross
 cross:
@@ -29,6 +24,18 @@ build:
                   --build-arg overlay_ref=$(OVERLAY_REF) \
                   --build-arg bpftrace_ref=$(BPFTRACE_REF) \
                   --build-arg bcc_ref=$(BCC_REF) \
-                  .
+                  . -t $(DOCKER_TAG)
+
+.PHONY: push
+push:
+	${DOCKER} push $(DOCKER_TAG)
+
+.PHONY: pull
+pull:
+	${DOCKER} pull $(DOCKER_TAG)
+
+.PHONY: login
+login:
+	echo "$$DOCKER_PASSWORD" | script -c bash -c "${DOCKER} login quay.io --username $$DOCKER_USER --password-stdin"
 
 all: build

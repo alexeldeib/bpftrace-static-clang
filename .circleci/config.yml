@@ -1,15 +1,34 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - /image-build/
     machine:
       image: ubuntu-1604:201903-01
 
     steps:
       - checkout
       - run: |
-         echo "$DOCKER_PASSWORD" | docker login quay.io --username $DOCKER_USER --password-stdin
-         #echo "$DOCKER_PASSWORD" | script -c bash -c "docker login quay.io --username $DOCKER_USER --password-stdin"
+         make login
       - run:
           name: Build
           command: make
           no_output_timeout: 240m
+      - run:
+          name: Push
+          command: make push
+  bpftrace:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    steps:
+      - checkout
+      - run: |
+         make login
+      - run:
+          name: Pull
+          command: make pull
+      - run:
+          name: Build
+          command: make

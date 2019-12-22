@@ -1,4 +1,3 @@
-
 # name the portage image
 FROM gentoo/portage:latest as portage
 
@@ -73,8 +72,3 @@ RUN git reset --hard ${bpftrace_ref} && \
     sed -i "s|-lclang|/usr/lib/llvm/8/lib64/libclang.a|g" \
       src/CMakeFiles/bpftrace.dir/link.txt && \
     make -j$(nproc) && make install
-
-
-FROM ubuntu:disco
-
-COPY --from=builder /usr/local/bin/bpftrace /usr/bin/bpftrace

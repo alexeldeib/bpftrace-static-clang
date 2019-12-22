@@ -13,9 +13,6 @@ ARG bpftrace_ref
 ARG cross_target
 
 # Sandboxes removed so we don't need ptrace cap for builds
-RUN echo 'FEATURES="buildpkg -sandbox -usersandbox"' >> /etc/portage/make.conf
-RUN echo 'USE="static-libs"' >> /etc/portage/make.conf
-RUN cat /etc/portage/make.conf
 
 RUN mkdir -p /var/db/repos/crossdev/{profiles,metadata} && \
     echo 'crossdev' > /var/db/repos/crossdev/profiles/repo_name && \
@@ -30,13 +27,25 @@ RUN emerge -v crossdev
 RUN crossdev --stable -t $cross_target --init-target -oO /var/db/repos/crossdev
 RUN crossdev --stable -t $cross_target -oO /var/db/repos/crossdev
 
-RUN $cross_target-emerge -quv --keep-going @system
+RUN sed -i 's/sandbox/-sandbox -usersandbox/g' \
+    /usr/$cross_target/etc/portage/make.conf && \
+    sed -i 's/-pam/-pam static-libs/g' \
+    /usr/$cross_target/etc/portage/make.conf && \
+    cat /usr/$cross_target/etc/portage/make.conf
+
+RUN rm /usr/$cross_target/etc/portage/make.profile && \
+    ln -sf /var/db/repos/gentoo/profiles/default/linux/amd64/17.0/no-multilib/ \
+    /usr/$cross_target/etc/portage/make.profile
+
+RUN $cross_target-emerge -quDU --keep-going --with-bdeps=y @world || true
+RUN $cross_target-emerge -quDU --keep-going --with-bdeps=y @world || true
+
 RUN $cross_target-emerge -qv dev-vcs/git dev-util/cmake
-#
-## Build static libs for libelf and zlib
-#RUN emerge -qv dev-libs/elfutils
-#RUN emerge -qv sys-libs/zlib
-#
+
+# Build static libs for libelf and zlib
+RUN $cross_target-emerge -qv dev-libs/elfutils
+RUN $cross_target-emerge -qv sys-libs/zlib
+
 ## Add the custom overlay for clang ebuild with libclang.a, and build llvm
 ## and clang without SHARED=on
 #RUN git clone https://github.com/dalehamel/bpftrace-static-deps.git \
@@ -92,3 +101,6 @@ RUN $cross_target-emerge -qv dev-vcs/git dev-util/cmake
 #FROM ubuntu:disco
 #
 #COPY --from=builder /usr/local/bin/bpftrace /usr/bin/bpftrace
+
+#RUN $cross_target-emerge -qv1 --keep-going \
+#    $(egrep '^[a-z]+' /var/db/repos/gentoo/profiles/default/linux/packages.build)
