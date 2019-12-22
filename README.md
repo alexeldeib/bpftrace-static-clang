@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dalehamel/bpftrace-static-clang.svg?branch=master)](https://travis-ci.org/dalehamel/bpftrace-static-clang)
+[![CircleCI](https://circleci.com/gh/dalehamel/bpftrace-static-clang.svg?style=svg)](https://circleci.com/gh/dalehamel/bpftrace-static-clang)
 
 # What's this?
 
