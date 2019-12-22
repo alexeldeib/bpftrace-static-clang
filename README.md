@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dalehamel/bpftrace-static-clang.svg?branch=master)](https://travis-ci.org/dalehamel/bpftrace-static-clang)
+
 # What's this?
 
 This repository builds a bpftrace executable with (almost) no dependencies,
