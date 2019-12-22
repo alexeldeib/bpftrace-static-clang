@@ -10,4 +10,4 @@ jobs:
       - run:
           name: Build
           command: make
-          no_output_timeout: 60m
+          no_output_timeout: 240m
