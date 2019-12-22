@@ -1,0 +1,13 @@
+version: 2
+jobs:
+  build:
+    machine:
+      image: ubuntu-1604:201903-01
+
+    steps:
+      - checkout
+
+      - run:
+          name: Build
+          command: make
+          no_output_timeout: 60m

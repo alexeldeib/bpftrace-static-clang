@@ -27,7 +27,8 @@ RUN mkdir -p /etc/portage/repos.conf && \
 
 RUN emerge -v crossdev
 
-RUN crossdev --stable -t $cross_target
+RUN crossdev --stable -t $cross_target --init-target -oO /var/db/repos/crossdev
+RUN crossdev --stable -t $cross_target -oO /var/db/repos/crossdev
 
 RUN $cross_target-emerge -quv --keep-going @system
 RUN $cross_target-emerge -qv dev-vcs/git dev-util/cmake

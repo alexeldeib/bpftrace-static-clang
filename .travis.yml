@@ -1,7 +1,0 @@
-language: generic
-dist: bionic
-services:
-- docker
-script:
-- bash -c "(while true; do echo '.'; sleep 60; done ) &" # ensure output is printed
-- make
