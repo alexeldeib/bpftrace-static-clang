@@ -58,7 +58,8 @@ WORKDIR /src/bpftrace
 RUN git reset --hard ${bpftrace_ref} && \
     sed -i 's/-static/-static-libgcc -static-libstdc++/g' CMakeLists.txt\
     && mkdir build && cd build && \
-    cmake -DCMAKE_BUILD_TYPE="Release" -DSTATIC_LINKING:BOOL=ON ../ && \
+    cmake -DCMAKE_BUILD_TYPE="Release" -DSTATIC_LINKING:BOOL=ON \
+          -DBUILD_TESTING=OFF ../ && \
     llvmlibs=$(ls -1 /usr/lib/llvm/8/lib64/*.a | tr '\n' ' ') && \
     glibc_statics="-Wl,-Bstatic -lz -lrt -ldl -lpthread" && \
     glibc_dynamic="-lpthread -ldl -Wl,-Bstatic -lz -lrt" && \
