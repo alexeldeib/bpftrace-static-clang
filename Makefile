@@ -8,31 +8,42 @@ BPFTRACE_REF ?= "master"
 OVERLAY_REF ?= "8fcc2a5676f9bea4ea6945f2cfdf52319ce7759c"
 BCC_REF ?= "v0.12.0"
 DOCKER_TAG ?= "quay.io/dalehamel/bpftrace-static-clang:latest"
+DOCKER_TAG_CROSS ?= "quay.io/dalehamel/bpftrace-static-clang:cross"
+DOCKER_TAG_BPFTRACE ?= "quay.io/dalehamel/bpftrace-static-clang:bpftrace"
 
 .PHONY: cross
 cross:
-	${DOCKER} build \
+	${DOCKER} build -f docker/Dockerfile.cross \
+                  -t $(DOCKER_TAG_CROSS) \
                   --build-arg overlay_ref=$(OVERLAY_REF) \
                   --build-arg bpftrace_ref=$(BPFTRACE_REF) \
                   --build-arg bcc_ref=$(BCC_REF) \
                   --build-arg cross_target=x86_64-nomultilib-linux-gnu \
                   cross
 
-.PHONY: build
-build:
-	${DOCKER} build \
+.PHONY: image/build
+image/build:
+	${DOCKER} build -f docker/Dockerfile.buildimage \
+                  -t $(DOCKER_TAG) \
                   --build-arg overlay_ref=$(OVERLAY_REF) \
                   --build-arg bpftrace_ref=$(BPFTRACE_REF) \
                   --build-arg bcc_ref=$(BCC_REF) \
-                  . -t $(DOCKER_TAG)
+                  .
 
-.PHONY: push
-push:
+.PHONY: image/push
+image/push:
 	${DOCKER} push $(DOCKER_TAG)
 
-.PHONY: pull
-pull:
+.PHONY: image/pull
+image/pull:
 	${DOCKER} pull $(DOCKER_TAG)
+
+.PHONY: bpftrace
+bpftrace:
+	${DOCKER} build -f docker/Dockerfile.bpftrace \
+                  -t $(DOCKER_TAG_BPFTRACE) \
+                  --build-arg bpftrace_ref=$(BPFTRACE_REF) \
+                  .
 
 .PHONY: login
 login:
