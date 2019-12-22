@@ -6,7 +6,7 @@ ARG bpftrace_ref
 FROM gentoo/portage:latest as portage
 
 # image is based on stage3-amd64
-FROM gentoo/stage3-amd64:latest
+FROM gentoo/stage3-amd64:latest as builder
 
 # copy the entire portage volume in
 COPY --from=portage /var/db/repos/gentoo /var/db/repos/gentoo
@@ -72,3 +72,8 @@ RUN git reset --hard ${bpftrace_ref} && \
     sed -i "s|-lclang|/usr/lib/llvm/8/lib64/libclang.a|g" \
       src/CMakeFiles/bpftrace.dir/link.txt && \
     make -j$(nproc) && make install
+
+
+FROM ubuntu:disco
+
+COPY --from=builder /usr/local/bin/bpftrace /usr/bin/bpftrace
