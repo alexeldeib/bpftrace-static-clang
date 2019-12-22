@@ -1,6 +1,6 @@
-ARG overlay_ref=8fcc2a5676f9bea4ea6945f2cfdf52319ce7759c
-ARG bcc_ref=v0.12.0
-ARG bpftrace_ref=master
+ARG overlay_ref
+ARG bcc_ref
+ARG bpftrace_ref
 
 # name the portage image
 FROM gentoo/portage:latest as portage

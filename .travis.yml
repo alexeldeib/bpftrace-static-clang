@@ -1,0 +1,6 @@
+language: generic
+dist: bionic
+services:
+- docker
+script:
+- make
