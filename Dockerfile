@@ -26,7 +26,7 @@ RUN emerge -qv sys-libs/zlib
 # and clang without SHARED=on
 RUN git clone https://github.com/dalehamel/bpftrace-static-deps.git \
     /var/db/repos/localrepo && cd /var/db/repos/localrepo && \
-    git reset --hard 8fcc2a5676f9bea4ea6945f2cfdf52319ce7759c # $overlay_ref
+    git reset --hard  $overlay_ref
 
 RUN mkdir -p /etc/portage/repos.conf && \
     echo -e "[localrepo]\nlocation = /var/db/repos/localrepo\npriority = 100\n" >> /etc/portage/repos.conf/localrepo.conf
