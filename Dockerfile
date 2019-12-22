@@ -1,12 +1,13 @@
-ARG overlay_ref
-ARG bcc_ref
-ARG bpftrace_ref
 
 # name the portage image
 FROM gentoo/portage:latest as portage
 
 # image is based on stage3-amd64
 FROM gentoo/stage3-amd64:latest as builder
+
+ARG overlay_ref
+ARG bcc_ref
+ARG bpftrace_ref
 
 # copy the entire portage volume in
 COPY --from=portage /var/db/repos/gentoo /var/db/repos/gentoo

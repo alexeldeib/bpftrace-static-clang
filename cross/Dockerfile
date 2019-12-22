@@ -1,7 +1,3 @@
-ARG overlay_ref
-ARG bcc_ref
-ARG bpftrace_ref
-
 # name the portage image
 FROM gentoo/portage:latest as portage
 
@@ -10,6 +6,11 @@ FROM gentoo/stage3-amd64:latest as builder
 
 # copy the entire portage volume in
 COPY --from=portage /var/db/repos/gentoo /var/db/repos/gentoo
+
+ARG overlay_ref
+ARG bcc_ref
+ARG bpftrace_ref
+ARG cross_target
 
 # Sandboxes removed so we don't need ptrace cap for builds
 RUN echo 'FEATURES="buildpkg -sandbox -usersandbox"' >> /etc/portage/make.conf
@@ -26,13 +27,14 @@ RUN mkdir -p /etc/portage/repos.conf && \
 
 RUN emerge -v crossdev
 
-RUN crossdev --stable -t x86_64-nomultilib-linux-gnu
+RUN crossdev --stable -t $cross_target
 
-#RUN emerge -v dev-vcs/git dev-util/cmake
+RUN $cross_target-emerge -quv --keep-going @system
+RUN $cross_target-emerge -qv dev-vcs/git dev-util/cmake
 #
 ## Build static libs for libelf and zlib
-#RUN emerge -v dev-libs/elfutils
-#RUN emerge -v sys-libs/zlib
+#RUN emerge -qv dev-libs/elfutils
+#RUN emerge -qv sys-libs/zlib
 #
 ## Add the custom overlay for clang ebuild with libclang.a, and build llvm
 ## and clang without SHARED=on

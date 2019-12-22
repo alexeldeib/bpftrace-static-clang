@@ -14,6 +14,7 @@ cross:
                   --build-arg overlay_ref=$(OVERLAY_REF) \
                   --build-arg bpftrace_ref=$(BPFTRACE_REF) \
                   --build-arg bcc_ref=$(BCC_REF) \
+                  --build-arg cross_target=x86_64-nomultilib-linux-gnu \
                   cross
 
 .PHONY: build

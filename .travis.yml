@@ -3,4 +3,5 @@ dist: bionic
 services:
 - docker
 script:
-- script -c make
+- (while true; do echo '.'; sleep 60; done ) & # ensure output is printed
+-  make
