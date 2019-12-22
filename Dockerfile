@@ -16,11 +16,11 @@ RUN echo 'FEATURES="buildpkg -sandbox -usersandbox"' >> /etc/portage/make.conf
 RUN echo 'USE="static-libs"' >> /etc/portage/make.conf
 RUN cat /etc/portage/make.conf
 
-RUN emerge -qv dev-vcs/git dev-util/cmake
+RUN emerge -v dev-vcs/git dev-util/cmake
 
 # Build static libs for libelf and zlib
-RUN emerge -qv dev-libs/elfutils
-RUN emerge -qv sys-libs/zlib
+RUN emerge -v dev-libs/elfutils
+RUN emerge -v sys-libs/zlib
 
 # Add the custom overlay for clang ebuild with libclang.a, and build llvm
 # and clang without SHARED=on
@@ -32,8 +32,8 @@ RUN mkdir -p /etc/portage/repos.conf && \
     echo -e "[localrepo]\nlocation = /var/db/repos/localrepo\npriority = 100\n" >> /etc/portage/repos.conf/localrepo.conf
 
 # Install LLVM and build custom clang
-RUN emerge -qv sys-devel/llvm::localrepo
-RUN emerge -qv sys-devel/clang::localrepo
+RUN emerge -v sys-devel/llvm::localrepo
+RUN emerge -v sys-devel/clang::localrepo
 
 # Indicate to cmake the correct locations of clang/llvm cmake configs
 ENV LLVM_DIR=/usr/lib/llvm/8/lib64/cmake/llvm

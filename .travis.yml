@@ -3,4 +3,4 @@ dist: bionic
 services:
 - docker
 script:
-- travis_wait 60 make
+- make
