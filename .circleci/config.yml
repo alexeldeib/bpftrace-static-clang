@@ -29,6 +29,8 @@ jobs:
       - run:
           name: Build
           command: make bpftrace
+      - store_artifacts:
+          path: bpftrace
 
 workflows:
   version: 2

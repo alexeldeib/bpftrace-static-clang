@@ -11,6 +11,11 @@ ARG overlay_ref
 ARG bcc_ref
 ARG bpftrace_ref
 ARG cross_target
+ARG SUFFIX
+ARG ARCH=amd64
+ARG MICROARCH=amd64
+ARG DIST="https://ftp-osl.osuosl.org/pub/gentoo/releases/${ARCH}/autobuilds"
+ARG SIGNING_KEY="0xBB572E0E2D182910"
 
 # Sandboxes removed so we don't need ptrace cap for builds
 
@@ -24,21 +29,20 @@ RUN mkdir -p /etc/portage/repos.conf && \
 
 RUN emerge -v crossdev
 
-RUN crossdev --stable -t $cross_target --init-target -oO /var/db/repos/crossdev
-RUN crossdev --stable -t $cross_target -oO /var/db/repos/crossdev
+RUN crossdev --stable -t $cross_target
 
-RUN sed -i 's/sandbox/-sandbox -usersandbox/g' \
-    /usr/$cross_target/etc/portage/make.conf && \
-    sed -i 's/-pam/-pam static-libs/g' \
-    /usr/$cross_target/etc/portage/make.conf && \
-    cat /usr/$cross_target/etc/portage/make.conf
+RUN STAGE3PATH="$(wget -O- "${DIST}/latest-stage3-${MICROARCH}${SUFFIX}.txt" | \
+   tail -n 1 | cut -f 1 -d ' ')"  && \
+   echo "STAGE3PATH:" $STAGE3PATH && \
+   STAGE3="$(basename ${STAGE3PATH})" && \
+   wget -q "${DIST}/${STAGE3PATH}" \
+     "${DIST}/${STAGE3PATH}.CONTENTS" "${DIST}/${STAGE3PATH}.DIGESTS.asc" && \
+   tar xpf "${STAGE3}" --xattrs --numeric-owner -C /usr/$cross_target && \
+   ( sed -i -e 's/#rc_sys=""/rc_sys="docker"/g' \
+     /usr/$cross_target etc/rc.conf 2>/dev/null || true ) && \
+   echo 'UTC' > etc/timezone && \
+   rm ${STAGE3}.DIGESTS.asc ${STAGE3}.CONTENTS ${STAGE3}
 
-RUN rm /usr/$cross_target/etc/portage/make.profile && \
-    ln -sf /var/db/repos/gentoo/profiles/default/linux/amd64/17.0/no-multilib/ \
-    /usr/$cross_target/etc/portage/make.profile
-
-RUN $cross_target-emerge -quDU --keep-going --with-bdeps=y @world || true
-RUN $cross_target-emerge -quDU --keep-going --with-bdeps=y @world || true
 
 RUN $cross_target-emerge -qv dev-vcs/git dev-util/cmake
 
@@ -102,5 +106,3 @@ RUN $cross_target-emerge -qv sys-libs/zlib
 #
 #COPY --from=builder /usr/local/bin/bpftrace /usr/bin/bpftrace
 
-#RUN $cross_target-emerge -qv1 --keep-going \
-#    $(egrep '^[a-z]+' /var/db/repos/gentoo/profiles/default/linux/packages.build)

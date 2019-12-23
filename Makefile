@@ -10,6 +10,7 @@ BCC_REF ?= "v0.12.0"
 DOCKER_TAG ?= "quay.io/dalehamel/bpftrace-static-clang:latest"
 DOCKER_TAG_CROSS ?= "quay.io/dalehamel/bpftrace-static-clang:cross"
 DOCKER_TAG_BPFTRACE ?= "quay.io/dalehamel/bpftrace-static-clang:bpftrace"
+CROSS_TARGET ?= "x86_64-multilib-linux-gnu"
 
 .PHONY: cross
 cross:
@@ -18,8 +19,8 @@ cross:
                   --build-arg overlay_ref=$(OVERLAY_REF) \
                   --build-arg bpftrace_ref=$(BPFTRACE_REF) \
                   --build-arg bcc_ref=$(BCC_REF) \
-                  --build-arg cross_target=x86_64-nomultilib-linux-gnu \
-                  cross
+                  --build-arg cross_target=$(CROSS_TARGET) \
+                  .
 
 .PHONY: image/build
 image/build:
