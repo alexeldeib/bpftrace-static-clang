@@ -38,15 +38,20 @@ image/push:
 image/pull:
 	${DOCKER} pull $(DOCKER_TAG)
 
-.PHONY: bpftrace
 bpftrace:
 	${DOCKER} build -f docker/Dockerfile.bpftrace \
                   -t $(DOCKER_TAG_BPFTRACE) \
                   --build-arg bpftrace_ref=$(BPFTRACE_REF) \
                   .
+	${DOCKER} run -v $$(pwd):/app -ti \
+            $(DOCKER_TAG_BPFTRACE) \
+            cp /usr/local/bin/bpftrace /app
 
 .PHONY: login
 login:
 	echo "$$DOCKER_PASSWORD" | script -c bash -c "${DOCKER} login quay.io --username $$DOCKER_USER --password-stdin"
+
+clean:
+	rm -f bpftrace
 
 all: build

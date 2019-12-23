@@ -1,5 +1,7 @@
 FROM quay.io/dalehamel/bpftrace-static-clang:latest
 
+ARG bpftrace_ref
+
 # Build bpftrace
 # Currently hacked to post-process link.txt manually until the correct
 # cmake incantations can be worked in, this is to serve as a proof of concept

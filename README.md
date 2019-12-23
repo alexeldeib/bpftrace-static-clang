@@ -18,6 +18,33 @@ glibc libraries:
 `linux-vdso` is virtual / injected by the kernel, and the rest are provided by
 glibc.
 
+# How to use this
+
+This uses docker and gentoo's portage (ala chromiumos) to build the
+dependencies for bpftrace from source, with static linking enabled. This
+process is wrapped for you with a GNU Makefile.
+
+To start with, you can either pull the pre-existing image:
+
+```
+make image/pull
+```
+
+Or build it yourself with:
+
+```
+make image/build
+```
+
+On top of this image, bpftrace can then be built with:
+
+```
+make bpftrace
+```
+
+This will result in the bpftrace binary being copied to the local working
+directory from the build image.
+
 # Why make this?
 
 There is an alpine-based build for bpftrace which produces a static library. In
